@@ -1,12 +1,29 @@
-
-@media only screen and (min-width: 320px) {
-	
+.pos-relative {
+  position: relative;
 }
 
-@media only screen and (min-width: 420px) {
-
+.password-container {
+  input {
+    padding-right: 35px;
+  }
+  .pass-view {
+    position: absolute;
+    background-color: transparent;
+    font-size: 13px;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    text-decoration: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
 }
 
-@media only screen and (min-width: 620px) {
-
+.inline-block {
+  display: inline-block;
 }

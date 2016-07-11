@@ -25,7 +25,8 @@ module.exports = function (grunt) {
 				jsPathVendor: "assets/js/vendor/",
 				jsPathPlugins: "assets/js/plugins/",
 				imagePath: "assets/images/",
-				fontsPath: "assets/fonts/"
+				fontsPath: "assets/fonts/",
+				jsonPath: "assets/json/"
 			},
 			dist:{
 				path: "dist/",
@@ -34,7 +35,8 @@ module.exports = function (grunt) {
 				jsPathVendor: "dist/js/vendor/",
 				jsPathPlugins: "dist/js/plugins/",
 				imagePath: "dist/images/",
-				fontsPath: "dist/fonts/"
+				fontsPath: "dist/fonts/",
+				jsonPath: "dist/json/"
 			}
 		},
 
@@ -43,7 +45,7 @@ module.exports = function (grunt) {
 				jshintrc: ".jshintrc"
 			},
 			all:{
-				src: ["Gruntfile.js", "<%= fileDir.src.jsPath %>*.js", "!<%= fileDir.src.jsPathVendor %>", "!<%= fileDir.dist.jsPathPlugins %>"]
+				src: ["<%= fileDir.src.jsPath %>*.js", "!<%= fileDir.src.jsPathVendor %>", "!<%= fileDir.dist.jsPathPlugins %>"]
 			}
 		},
 
@@ -80,16 +82,14 @@ module.exports = function (grunt) {
 			},
 			jssrc: {
 				files: ["<%= fileDir.src.jsPath %>**/*.js"],
-				tasks: ["jshint", "concat:app", "min:app", "copy:appjs"],
+				tasks: ["concat:app", "min:app", "copy:appjs"],
 				options: {
 					interrupt: true
 				}
 			},
-			reload: {
-				files: ["<%= fileDir.dist.path %>**/*.*"],
-				options: {
-					livereload: true
-				}
+			html: {
+				files: ["<%= fileDir.src.path %>**/*.{html,htm}"],
+				tasks: ["copy:htmlfiles"]
 			}
 		},
 
@@ -118,7 +118,7 @@ module.exports = function (grunt) {
 		cssmin: {
 			sassCompiled: {
 				src: ["<%= fileDir.tempPath %>css/*.css"],
-				dest: "<%= fileDir.src.cssPath %>style.min.css"
+				dest: "<%= fileDir.dist.cssPath %>style.min.css"
 			}
 		},
 
@@ -131,7 +131,8 @@ module.exports = function (grunt) {
 			main: {
 				files: [
 					{expand: true, cwd: "<%= fileDir.src.cssPath %>",src: "*", dest: "<%= fileDir.dist.cssPath %>"},
-					{expand: true, cwd: "<%= fileDir.src.imagePath %>",src: "*", dest: "<%= fileDir.dist.imagePath %>"},
+					{expand: true, cwd: "<%= fileDir.src.imagePath %>",src: "**/*.*", dest: "<%= fileDir.dist.imagePath %>"},
+					{expand: true, cwd: "<%= fileDir.src.jsonPath %>",src: "**/*.*", dest: "<%= fileDir.dist.jsonPath %>"},
 					{expand: true, cwd: "<%= fileDir.src.fontsPath %>",src: "*", dest: "<%= fileDir.dist.fontsPath %>"},
 					{expand: true, cwd: "<%= fileDir.src.jsPathVendor %>",src: "*", dest: "<%= fileDir.dist.jsPathVendor %>"},
 					{expand: true, cwd: "<%= fileDir.tempPath %>js/",src: "plugins.min.js", dest: "<%= fileDir.dist.jsPathPlugins %>"}
@@ -164,11 +165,25 @@ module.exports = function (grunt) {
 					mode: true
 				}
 			}
-		}
+		},
 
+		// Live Reload
+		browserSync: {
+			default_options: {
+				bsFiles: {
+					src: "**"
+				},
+				options: {
+					watchTask: true,
+					server: {
+						baseDir: "./dist/"
+					}
+				}
+			}
+		}
 	});
 
-	grunt.registerTask('default', ["sass_version", "jshint", "clean", "concat", "min", "sass", "cssmin", "copy", "clean:tempDir", "watch"]);
+	grunt.registerTask('default', ["sass_version", "clean", "concat", "min", "sass", "cssmin", "copy", "clean:tempDir", "browserSync", "watch"]);
 
 	matchdep.filterDev("grunt-*").forEach(grunt.loadNpmTasks);
 };
